@@ -1,0 +1,21 @@
+{
+  "name": "miniprojectfullstack",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "node ./facades/testingFacades.js",
+    "start": "nodemon app.js"
+  },
+  "author": "hallur við neyst",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^1.17.2"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "ejs": "^2.5.7",
+    "express": "^4.16.3",
+    "mongoose": "^5.0.11"
+  }
+}

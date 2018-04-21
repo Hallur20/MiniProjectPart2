@@ -13,12 +13,42 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.listen('3000', () => {
     console.log("server started");
 });
-
++
 app.get('/', (req, res) => {
     User.find({}, (err, users)=>{
         res.render('index.ejs', {users: users, status: ""});
     })
 });
+//this is for the app in order to login - shows the users in json format in rest endpoint...
+app.post('/phoneLogin', (req, res)=>{
+    res.send("username:" + req.body.uname + ", password:" + req.body.password+ ", radius: " + req.body.radius);
+        User.find({}, (err, users) => {
+            if (err) throw new Exception({msg: "wrong username or password", status: 403});
+            for (var i = 0; i < users.length; i++) { //loop through users
+                if (users[i].userName === req.body.uname && users[i].password === req.body.password) { //if user and its password exists
+                    var id = users[i]._id;
+                    //lon, lat, id
+                    locationBlogFacade.addPositionWithPhone(req.body.lon, req.body.lat, id, req.body.radius);
+                    Position.find({ _id: { $ne: id } }, (err, positions) => {
+                        if (err) throw err;
+                        var arr = { friends: positions };
+                        var mapped = arr.friends.map((friend)=>{
+                            var username;
+                            for(var i = 0; i < users.length; i++){
+                                if(JSON.stringify(friend.user) === JSON.stringify(users[i]._id)){ //works only if objects are converted to json strings...
+                                    username = users[i].userName;
+                                }
+                            }
+                            return {"username": username, "latitude":friend.loc.coordinates[1], "longitude":friend.loc.coordinates[0]};
+                        });
+                        arr = {friends: mapped};
+                        res.send(arr);
+                        return;
+                    })
+                }
+            }
+        })
+})
 app.get('/test', (req, res) => {
     res.send("<h1>hello?</h1>");
 });

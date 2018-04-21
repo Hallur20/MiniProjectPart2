@@ -9,7 +9,9 @@ var PositionSchema = new Schema({
     loc: {
         'type': {type: String, enum: "Point", default: "Point"},
         coordinates: {type: [Number]}
-    }
+    },
+    radius: {type: Number},
+    cheatWithId: {type: String}
 });
 
 module.exports = mongoose.model("Position", PositionSchema);

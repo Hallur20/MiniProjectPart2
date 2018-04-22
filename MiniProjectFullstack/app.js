@@ -7,8 +7,10 @@ var userFacade = require("./facades/userFacade.js");
 var locationBlogFacade = require('./facades/locationBlogFacade.js');
 
 var app = express();
+var router = express.Router();
 app.set('view-engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 app.listen('3000', () => {
     console.log("server started");
@@ -19,10 +21,11 @@ app.get('/', (req, res) => {
         res.render('index.ejs', {users: users, status: ""});
     })
 });
+
 //this is for the app in order to login - shows the users in json format in rest endpoint...
 app.post('/phoneLogin', (req, res)=>{
-    res.send("username:" + req.body.uname + ", password:" + req.body.password+ ", radius: " + req.body.radius);
-        User.find({}, (err, users) => {
+    res.status(200).send({message: 'hello world'});
+        /*User.find({}, (err, users) => {
             if (err) throw new Exception({msg: "wrong username or password", status: 403});
             for (var i = 0; i < users.length; i++) { //loop through users
                 if (users[i].userName === req.body.uname && users[i].password === req.body.password) { //if user and its password exists
@@ -47,7 +50,7 @@ app.post('/phoneLogin', (req, res)=>{
                     })
                 }
             }
-        })
+        })*/
 })
 app.get('/test', (req, res) => {
     res.send("<h1>hello?</h1>");

@@ -21,26 +21,22 @@ export default class HomeScreen extends React.Component {
 
     returnTrue = () =>{
         //plan is to send mobile data to react somehow... fetch maybe?, and then with express use the addlocationwithphone method.
-        var sendThis = {uname: this.state.userName,
-        password: this.state.passWord,
-        radius: this.state.radius,
-        lat: this.state.lat,
-        lon: this.state.lon
-        }
+        var sendThis = this.state;
         var data = new FormData();
-        data.append("json", JSON.stringify( sendThis ));
-        fetch('http://301c7655.ngrok.io/phoneLogin',{
+        data.append("uname", sendThis.userName);
+        data.append("password", sendThis.passWord);
+        data.append("radius", sendThis.distance);
+        data.append("lon", sendThis.lon);
+        data.append("lat", sendThis.lat);
+        fetch('http://c1d7af96.ngrok.io/phoneLogin',{
             method: "POST",
-            headers: {
-                'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-                },
             body: data
         }).then((res)=>{
-            return res.json();
+            console.log(res);
+            return json.parse(res);
         }).then((data)=>{
-            JSON.stringify( data )
-        })
+            alert(data.message);
+        }).catch((err)=>{console.log(err)})
 
     }
 
@@ -84,10 +80,10 @@ export default class HomeScreen extends React.Component {
                 <Button onPress={()=>
                     
                     {
-                        var bool = this.returnTrue();
-                        if(bool === true){
+                        //var bool = this.returnTrue();
+                        //if(bool === true){
                         navigate('Profile')
-                    }
+                    //}
                     }} title="change scene"/>
             </View>
         );

@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var User = require("./models/user.js");
 var userFacade = require("./facades/userFacade.js");
 var locationBlogFacade = require('./facades/locationBlogFacade.js');
+var Position = require('./models/position');
 
 var app = express();
 var router = express.Router();
@@ -24,11 +25,11 @@ app.get('/', (req, res) => {
 
 //this is for the app in order to login - shows the users in json format in rest endpoint...
 app.post('/phoneLogin', (req, res)=>{
-    res.status(200).send({message: 'hello world'});
-        /*User.find({}, (err, users) => {
+    //res.send(req.body.passWord);
+       User.find({}, (err, users) => {
             if (err) throw new Exception({msg: "wrong username or password", status: 403});
             for (var i = 0; i < users.length; i++) { //loop through users
-                if (users[i].userName === req.body.uname && users[i].password === req.body.password) { //if user and its password exists
+                if (users[i].userName === req.body.userName && users[i].password === req.body.passWord) { //if user and its password exists
                     var id = users[i]._id;
                     //lon, lat, id
                     locationBlogFacade.addPositionWithPhone(req.body.lon, req.body.lat, id, req.body.radius);
@@ -50,7 +51,7 @@ app.post('/phoneLogin', (req, res)=>{
                     })
                 }
             }
-        })*/
+        })
 })
 app.get('/test', (req, res) => {
     res.send("<h1>hello?</h1>");

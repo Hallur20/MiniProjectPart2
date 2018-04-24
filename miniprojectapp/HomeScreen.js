@@ -1,15 +1,16 @@
 import React from 'react'
-import {View, Text, StyleSheet, TextInput, Button} from 'react-native'
+import { View, Text, StyleSheet, TextInput, Button } from 'react-native'
 import MapView from 'react-native-maps';
 import { Marker } from 'react-native-maps';
+var a;
 export default class HomeScreen extends React.Component {
     static navigationOptions = {
         title: 'Home',
-      };
+    };
 
     constructor(props) {
         super(props);
-        this.state = {userName: "", passWord: "", distance: 0, lat: 62.007864, lon: -6.790981699999975 }
+        this.state = { userName: "hvn20", passWord: "123", distance: 1, lat: 62.007864, lon: -6.790981699999975, repo: { state: "nothing" } }
     }
     componentDidMount() {
         navigator.geolocation.getCurrentPosition((successfully, error) => {
@@ -19,29 +20,50 @@ export default class HomeScreen extends React.Component {
         })
     }
 
-    returnTrue = () =>{
+    returnTrue = () => {
         //plan is to send mobile data to react somehow... fetch maybe?, and then with express use the addlocationwithphone method.
         var sendThis = this.state;
         var data = new FormData();
-        data.append("uname", sendThis.userName);
+        /*data.append("uname", sendThis.userName);
         data.append("password", sendThis.passWord);
         data.append("radius", sendThis.distance);
         data.append("lon", sendThis.lon);
         data.append("lat", sendThis.lat);
-        fetch('http://c1d7af96.ngrok.io/phoneLogin',{
+        */
+        data.append("json", JSON.stringify(sendThis));
+        fetch('http://80e38b4f.ngrok.io/phoneLogin', {
             method: "POST",
-            body: data
-        }).then((res)=>{
-            console.log(res);
-            return json.parse(res);
-        }).then((data)=>{
-            alert(data.message);
-        }).catch((err)=>{console.log(err)})
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(this.state)
+        }).then((res) => {
+            return res.json();
+        }).then((data) => {
+            a = data.friends.filter((inside) => { return inside.username !== this.state.userName })
+        })
+            .catch((err) => { })
 
     }
 
     render() {
-        const {navigate} = this.props.navigation;
+        const { navigate } = this.props.navigation;
+        var friends = [];
+        if (this.state.repo.state !== "nothing") {
+            for(var i = 0; i < this.state.repo.length; i++){
+                var username = this.state.repo[i].username;
+                var lat = this.state.repo[i].latitude;
+                var lon = this.state.repo[i].longitude;
+            friends.push(<Marker
+                coordinate={{ latitude: lat, longitude: lon }}
+                title={username}
+                description={"description for user: " + username}
+            />); 
+            }
+
+            
+        }
         return (
             <View style={styles.container}>
                 <MapView style={styles.map}
@@ -57,34 +79,51 @@ export default class HomeScreen extends React.Component {
                         title="you"
                         description="this is your position"
                     />
+                     {friends}
+                   
                 </MapView>
 
                 <TextInput
-                placeholder="enter username"
+                    placeholder="enter username"
                     style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                    onChangeText={(username) => this.setState({userName: username})}
+                    onChangeText={(username) => this.setState({ userName: username })}
                     value={this.state.userName}
                 />
                 <TextInput
-                placeholder="enter password"
-                onChangeText={(password) => this.setState({passWord: password})}
-                value={this.state.passWord}
+                    placeholder="enter password"
+                    onChangeText={(password) => this.setState({ passWord: password })}
+                    value={this.state.passWord}
                 />
                 <TextInput
-                placeholder="enter maximum km"
-                keyboardType = 'numeric'
+                    placeholder="enter maximum km"
+                    keyboardType='numeric'
                     style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                    onChangeText={(radius) => this.setState({radius: radius})}
+                    onChangeText={(radius) => this.setState({ radius: radius })}
                     value={this.state.radius}
                 />
-                <Button onPress={()=>
-                    
-                    {
-                        //var bool = this.returnTrue();
-                        //if(bool === true){
-                        navigate('Profile')
+                <Button onPress={() => {
+                    var arr;
+                    fetch('http://80e38b4f.ngrok.io/phoneLogin', {
+                        method: "POST",
+                        headers: {
+                            'Accept': 'application/json, text/plain, */*',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(this.state)
+                    }).then((res) => {
+                        return res.json();
+                    }).then((data) => {
+                        var arr = data.friends.filter((inside) => { return inside.username !== this.state.userName });
+                        this.setState({ repo: arr });
+                        console.log(this.state.repo);
+                    })
+                        .catch((err) => { })
+                    //navigate('Profile')
                     //}
-                    }} title="change scene"/>
+
+                }} title="change scene" />
+
+
             </View>
         );
     }
